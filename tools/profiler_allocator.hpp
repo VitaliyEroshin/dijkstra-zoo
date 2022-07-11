@@ -1,18 +1,14 @@
 #pragma once
+#include <cstddef> // size_t
+#include <stdint.h> // uint8_t
+#include <algorithm> // std::max
 
 struct ProfilerAllocatorStats {
-    ProfilerAllocatorStats();
-
-    int memory_allocated = 0;
-    int memory = 0;
-    int max_memory_usage = 0;
-    int allocation_calls = 0;
+  static int memory_allocated;
+  static int memory;
+  static int max_memory_usage;
+  static int allocation_calls;
 };
-
-namespace ProfilerAllocatorDetail {
-    ProfilerAllocatorStats stats;
-    ProfilerAllocatorStats getMeasurement();
-}
 
 /*
     Modified version of std::allocator, collects information about
@@ -21,7 +17,7 @@ namespace ProfilerAllocatorDetail {
 */
 
 template <typename T>
-class ProfilerAllocator {
+class ProfilerAllocator : public ProfilerAllocatorStats {
 public:
   using value_type = T;
   using pointer = T*;
@@ -40,6 +36,8 @@ public:
   ProfilerAllocator<T>(const ProfilerAllocator<U>&) {}
 
   T* allocate(size_t n);
-
+  
   void deallocate(const T* ptr, size_t n);
 };
+
+#include "profiler_allocator.cpp"
